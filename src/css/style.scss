@@ -1,6 +1,6 @@
 .js-fixedTable {
   position: relative;
-  overflow: auto;
+  overflow: scroll;
 }
 
 .fixedTable {
@@ -21,7 +21,9 @@
     }
   }
 
-  &-vh {
+  &-v,
+  &-h {
+    overflow: hidden;
   }
 }
 
@@ -59,10 +61,10 @@
     overflow: auto;
   }
 
-  &.scroll-vh {
+  &.fixedTable-vh {
     overflow: hidden;
     .fixedTable-origin-wrap {
-      overflow: hidden;
+      overflow: scroll;
       opacity: 0;
     }
   }
