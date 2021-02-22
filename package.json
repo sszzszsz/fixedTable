@@ -1,0 +1,38 @@
+{
+  "name": "fixed-table",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "browserslist": [
+    "last 2 versions",
+    "IE 11"
+  ],
+  "scripts": {
+    "compile:js": "babel src/js --compact=true --out-dir dist/js --source-maps",
+    "compile:css": "node-sass --recursive src/css/ --output dist/css/ --output-style compressed --source-map dist/css/map/",
+    "compile": "run-p compile:js compile:css",
+    "lint:js": "eslint src/js/**/*.js",
+    "format:js": "eslint src/js/**/*.js --fix",
+    "watch:css": "watch \"npm run compile:css\" ./src/css",
+    "watch:jslint": "watch \"npm run lint:js\" ./src/js",
+    "watch:js": "watch \"npm run compile:js\" ./src/js",
+    "watch": "run-p watch:css watch:js watch:jslint",
+    "server": "browser-sync start -s dist -w dist/*.html src/css/*.scss src/js/*.js",
+    "dev":"concurrently \"npm run server\" \"npm run watch\"",
+    "start": "run-s compile dev"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.12.17",
+    "@babel/core": "^7.12.17",
+    "@babel/preset-env": "^7.12.17",
+    "browser-sync": "^2.26.14",
+    "concurrently": "^6.0.0",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^8.0.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "node-sass": "^5.0.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.2.1",
+    "watch": "^1.0.2"
+  }
+}

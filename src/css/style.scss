@@ -1,0 +1,69 @@
+.js-fixedTable {
+  position: relative;
+  overflow: auto;
+}
+
+.fixedTable {
+  &-origin {
+    &-wrap {
+      position: relative;
+      z-index: 0;
+      overflow-y: auto;
+    }
+  }
+  &-clone {
+    &-wrap {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+  }
+
+  &-vh {
+  }
+}
+
+.js-fixedTable-vh {
+  .fixedTable-tl-wrap,
+  .fixedTable-tr-wrap,
+  .fixedTable-bl-wrap,
+  .fixedTable-br-wrap {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+
+    // -ms-overflow-style: none; /* これを追加 */
+    // scrollbar-width: none;
+    // &::-webkit-scrollbar {
+    //   display: none;
+    // }
+  }
+  .fixedTable-tl-wrap {
+    overflow: hidden;
+  }
+  .fixedTable-tr-wrap {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .fixedTable-bl-wrap {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .fixedTable-br-wrap {
+    z-index: 3;
+    overflow: auto;
+  }
+
+  &.scroll-vh {
+    overflow: hidden;
+    .fixedTable-origin-wrap {
+      overflow: hidden;
+      opacity: 0;
+    }
+  }
+}
