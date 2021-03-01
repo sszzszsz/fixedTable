@@ -43,22 +43,21 @@ class FixedTable {
       console.log('縦横');
       this.type = 'vh';
       this.maxHeight = this.wrap.getAttribute('data-height');
-      //本当に縦横スクロールすべきか判断する
-      let flag = this.judgeOverflow();
 
-      if (flag === true) {
+      //本当に縦横スクロールすべきか判断する
+      if (this.judgeOverflow() === 'vh') {
         this.wrap.classList.add('fixedTable--vh');
         this.colneFourTable();
         this.setFirxedColRowStyle();
         this.setFirxedColRowEvent();
         this.setResizeEventListner();
-      } else if (flag === 'h') {
+      } else if (this.judgeOverflow() === 'h') {
         this.type = 'h';
         this.wrap.classList.add('fixedTable--h');
         this.colneTable();
         this.setFirxedColStyle();
         this.setResizeEventListner();
-      } else if (flag === 'v') {
+      } else if (this.judgeOverflow() === 'v') {
         this.type = 'v';
         this.wrap.classList.add('fixedTable--v');
         this.colneTable();
@@ -243,8 +242,8 @@ class FixedTable {
           this.fixedColHeight += targetRow.children[0].offsetHeight;
         }
     }
-    console.log('横固定幅：' + this.fixedColWidth);
-    console.log('縦固定幅：' + this.fixedColHeight);
+    // console.log('横固定幅：' + this.fixedColWidth);
+    // console.log('縦固定幅：' + this.fixedColHeight);
   }
 
   // ----------------------------
@@ -260,7 +259,7 @@ class FixedTable {
   // ----------------------------
   getScrollbarWidth() {
     this.scrollbarW = this.wrap.offsetWidth - this.wrap.firstElementChild.clientWidth;
-    console.log('スクロールバーの幅:' + this.scrollbarW);
+    // console.log('スクロールバーの幅:' + this.scrollbarW);
   }
   // ----------------------------
   // 表がスクロールするかしないか判定
@@ -273,14 +272,14 @@ class FixedTable {
       flag = this.wrap.offsetWidth < this.originTable.offsetWidth;
     } else if (this.direction === 'vh') {
       if (this.wrap.offsetWidth < this.originTable.offsetWidth && this.originTable.scrollHeight > this.maxHeight) {
-        flag = true;
-      } else if (this.wrap.offsetWidth < this.originTable.offsetWidth && this.originTable.scrollHeight <= this.maxHeight) {
+        flag = 'vh';
+
         // 縦横指定だけど、横スクしかしない時
-        console.log('縦横指定だけど、横スクしかしない');
+      } else if (this.wrap.offsetWidth < this.originTable.offsetWidth && this.originTable.scrollHeight <= this.maxHeight) {
         flag = 'h';
-      } else if (this.wrap.offsetWidth >= this.originTable.offsetWidth && this.originTable.scrollHeight > this.maxHeight) {
+
         // 縦横指定だけど、縦スクしかしない時
-        console.log('縦横指定だけど、縦スクしかしない');
+      } else if (this.wrap.offsetWidth >= this.originTable.offsetWidth && this.originTable.scrollHeight > this.maxHeight) {
         flag = 'v';
       }
     }
@@ -422,18 +421,38 @@ class FixedTable {
     // 大枠の横幅が変化した場合、
     // 横スクロールの有無・縦スクロールの有無の両方が変化しうる
     if (this.wrapW !== this.wrap.offsetWidth) {
-      console.log(this.wrap);
-
       if (this.direction === 'vh') {
         //本当に縦横スクロールすべきか判断する
-        let flag = this.judgeOverflow();
+        let prevType = this.type;
 
-        if (flag === true) {
-          this.setFirxedColRowStyle();
-        } else if (flag === 'h') {
-          this.setFirxedColStyle();
-        } else if (flag === 'v') {
-          this.setFirxedRowStyle();
+        if (this.judgeOverflow() === 'vh') {
+          // riseze前も後も縦横スクロールの場合
+          if (this.judgeOverflow() === 'vh' && this.judgeOverflow() === prevType) {
+            this.setFirxedColRowStyle();
+          } else {
+            //riseze前後で縦横スクロールが、縦のみもしくは横のみになる
+            this.destroy();
+            this.init();
+          }
+        } else if (this.judgeOverflow() === 'h') {
+          // riseze前後も横スクロールの場合
+          if (this.judgeOverflow() === prevType) {
+            this.setFirxedColStyle();
+
+            // reseze前後で横スクロールだけじゃなくなる
+          } else {
+            console.log('reseze前後で横スクロールだけじゃなくなる');
+            this.destroy();
+            this.init();
+          }
+        } else if (this.judgeOverflow() === 'v') {
+          if (this.judgeOverflow() === prevType) {
+            this.setFirxedRowStyle();
+          } else {
+            console.log('reseze前後で縦スクロールだけじゃなくなる');
+            this.destroy();
+            this.init();
+          }
         }
 
         // 横スクロールだったら
@@ -479,6 +498,14 @@ class FixedTable {
 
       this.originTableWrap.classList.remove('fixedTable-origin-wrap');
       this.originTable.classList.remove('fixedTable-origin-table');
+
+      this.originTableWrap = null;
+      this.originTable = null;
+      this.originTableW = null;
+      this.originTableH = null;
+      this.cloneTableWrap = null;
+      this.cloneTable = null;
+      this.type = null;
     }
   }
 }
