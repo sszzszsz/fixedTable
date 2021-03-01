@@ -431,7 +431,7 @@ class FixedTable {
             this.setFirxedColRowStyle();
           } else {
             //riseze前後で縦横スクロールが、縦のみもしくは横のみになる
-            this.destroy();
+            this.destroyStyle();
             this.init();
           }
         } else if (this.judgeOverflow() === 'h') {
@@ -442,7 +442,7 @@ class FixedTable {
             // reseze前後で横スクロールだけじゃなくなる
           } else {
             console.log('reseze前後で横スクロールだけじゃなくなる');
-            this.destroy();
+            this.destroyStyle();
             this.init();
           }
         } else if (this.judgeOverflow() === 'v') {
@@ -450,7 +450,7 @@ class FixedTable {
             this.setFirxedRowStyle();
           } else {
             console.log('reseze前後で縦スクロールだけじゃなくなる');
-            this.destroy();
+            this.destroyStyle();
             this.init();
           }
         }
@@ -471,7 +471,7 @@ class FixedTable {
   // 破棄
   // ・HTMLをもとに戻す
   // ----------------------------
-  destroy() {
+  destroyStyle() {
     console.log('destroy');
     let cloneEl;
     if (this.type === 'vh') {
@@ -507,5 +507,14 @@ class FixedTable {
       this.cloneTable = null;
       this.type = null;
     }
+  }
+
+  removeEventListener() {
+    window.removeEventListener('resize', this.resizeEndHandler);
+  }
+
+  destroy() {
+    this.destroyStyle();
+    this.removeEventListener();
   }
 }
