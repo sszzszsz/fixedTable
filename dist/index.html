@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="./css/style.css" />
   <script src="./js/FixedTable.js"></script>
   <script>
+
     window.addEventListener("load", function () {
       let tableLists = Array.from(document.getElementsByClassName("js-fixedTable"));
       let tableInstance = tableLists.map(function (table) {
@@ -18,11 +19,46 @@
         item.init();
         return item;
       });
+
+      let destroyBtn = document.getElementById("destroy")
+      destroyBtn.addEventListener('click', function () {
+        tableInstance.forEach(instance => {
+          instance.destroy()
+        });
+      })
     });
+
   </script>
 </head>
 
 <body>
+  <h1>行列固定のテーブル</h1>
+  <p>EXCELのように行、列を固定にできるプラグインです</p>
+
+  <h2>動作確認環境</h2>
+  <ul>
+    <li>
+      <p>MacBook Pro (13-inch, M1, 2020) バージョン11.0</p>
+      <dl>
+        <dt>Google Chrome</dt>
+        <dd>バージョン: 88.0.4324.182（Official Build）(arm64)</dd>
+      </dl>
+      <dl>
+        <dt>Fire Fox</dt>
+        <dd>バージョン: 85.0.2</dd>
+      </dl>
+      <dl>
+        <dt>Safari</dt>
+        <dd>バージョン: 14.0.1 (16610.2.11.1.3)</dd>
+      </dl>
+      <dl>
+        <dt>chromium Edge</dt>
+        <dd>バージョン: 88.0.705.74 (公式ビルド) (64 ビット)</dd>
+      </dl>
+    </li>
+    <li>Windows 10</li>
+  </ul>
+
   <h2>固定無し</h2>
   <div class="cont js-fixedTable">
     <div>
@@ -82,7 +118,7 @@
     <li>js-fixedTableの要素にdata-heightでスクロール領域の高さを指定する</li>
     <li>固定見出しにする行の一番最初に特定のクラス（js-fixedHead）を付与する</li>
   </ul>
-  <div class="cont js-fixedTable js-fixedTable-vertical" data-height="300">
+  <div class="cont js-fixedTable" data-height="300" data-direction="vertical">
     <div>
       <table>
         <thead>
@@ -153,7 +189,7 @@
     <li>囲った要素にjs-fixedTableと、js-fixedTable-horizontalクラスを付与する</li>
     <li>一番最初の列の、固定見出しにするセルに対して特定のクラス（js-fixedHead）を付与する</li>
   </ul>
-  <div class="cont js-fixedTable js-fixedTable-horizontal">
+  <div class="cont js-fixedTable" data-direction="horizontal">
     <div>
       <table>
         <tbody>
@@ -226,7 +262,7 @@
   </ul>
 
   <h3>縦横スクロールで横スクロールのみ</h3>
-  <div class="cont js-fixedTable js-fixedTable-vh" data-height="300">
+  <div class="cont js-fixedTable" data-height="300" data-direction="vh">
     <div>
       <table>
         <thead>
@@ -291,7 +327,7 @@
   </div>
 
   <h3>縦横スクロールで縦スクロールのみ</h3>
-  <div class="cont js-fixedTable js-fixedTable-vh" data-height="200">
+  <div class="cont js-fixedTable" data-height="200" data-direction="vh">
     <div>
       <table>
         <thead>
@@ -361,7 +397,7 @@
   </div>
 
   <h3>縦横スクロール</h3>
-  <div class="cont js-fixedTable js-fixedTable-vh" data-height="400">
+  <div class="cont js-fixedTable" data-height="400" data-direction="vh">
     <div>
       <table>
         <thead>
@@ -483,6 +519,8 @@
     </div>
   </div>
 
+
+  <button id="destroy">破棄</button>
   <footer id="footer">
     Vanilla Fixed Table
   </footer>

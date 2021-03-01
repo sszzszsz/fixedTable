@@ -21,13 +21,15 @@
     }
   }
 
-  &-v,
-  &-h {
+  &--v,
+  &--h {
     overflow: hidden;
   }
 }
 
-.js-fixedTable-vh {
+.fixedTable--vh {
+  overflow: hidden;
+
   .fixedTable-tl-wrap,
   .fixedTable-tr-wrap,
   .fixedTable-bl-wrap,
@@ -61,11 +63,8 @@
     overflow: auto;
   }
 
-  &.fixedTable-vh {
-    overflow: hidden;
-    .fixedTable-origin-wrap {
-      overflow: scroll;
-      opacity: 0;
-    }
+  .fixedTable-origin-wrap {
+    overflow: scroll;
+    opacity: 0;
   }
 }
