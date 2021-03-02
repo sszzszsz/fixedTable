@@ -49,36 +49,8 @@ class FixedTable {
   // ----------------------------
   setFixedStyle() {
     let promise = Promise.resolve();
-    let doFirstFunc = setHtmlCss.bind(this);
-    let doSecondFunc = toggleClass.bind(this);
-    let doThirdFunc;
-    if (this.noOption) {
-      doThirdFunc = function () {
-        return false;
-      };
-    } else if (typeof this.option.afterInit === 'function') {
-      doThirdFunc = this.option.afterInit.bind(this);
-    }
 
-    promise
-      .then(function () {
-        return new Promise(function (resolve) {
-          doFirstFunc();
-          resolve();
-        });
-      })
-      .then(function () {
-        return new Promise(function (resolve) {
-          doSecondFunc();
-          resolve();
-        });
-      })
-      .then(function () {
-        // optionのafterInitの指定がある場合最後に実行
-        doThirdFunc();
-      });
-
-    function setHtmlCss() {
+    let setHtmlCss = () => {
       // 縦横スクロールのクラスがついていたら
       if (this.direction === 'vh') {
         console.log('縦横');
@@ -131,13 +103,39 @@ class FixedTable {
       } else {
         this.wrap.classList.add('fixedTable--noScr');
       }
-    }
+    };
 
-    function toggleClass() {
+    let toggleClass = () => {
       console.log('class toggle');
       this.wrap.classList.remove('fixedTable--before');
       this.wrap.classList.add('fixedTable--active');
-    }
+    };
+
+    let initCallbackFunc = () => {
+      if (this.noOption) {
+        return false;
+      } else if (typeof this.option.afterInit === 'function') {
+        return this.option.afterInit.bind(this);
+      }
+    };
+
+    promise
+      .then(function () {
+        return new Promise(function (resolve) {
+          setHtmlCss();
+          resolve();
+        });
+      })
+      .then(function () {
+        return new Promise(function (resolve) {
+          toggleClass();
+          resolve();
+        });
+      })
+      .then(function () {
+        // optionのafterInitの指定がある場合最後に実行
+        initCallbackFunc();
+      });
   }
 
   // ----------------------------
