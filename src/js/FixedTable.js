@@ -6,7 +6,7 @@
 
 // eslint-disable-next-line no-unused-vars
 class FixedTable {
-  constructor(el) {
+  constructor(el, option) {
     this.wrap = el;
     this.wrapHtml = el.innerHTML;
     this.originTableWrap = null;
@@ -16,9 +16,21 @@ class FixedTable {
     this.cloneTableWrap = null;
     this.cloneTable = null;
     this.type = null;
+
+    // option
+    this.noOption = typeof option === 'undefined' ? true : false;
+    if (this.noOption) return false;
+    this.option = {
+      afterInit: typeof option.afterInit === 'function' ? option.afterInit : null,
+      startScroll: typeof option.startScroll === 'function' ? option.startScroll : typeof option.startScroll === 'undefined' ? null : null,
+      finishScroll: typeof option.finishScroll === 'function' ? option.finishScroll : typeof option.finishScroll === 'undefined' ? null : null,
+      noScrollbar: typeof option.noScrollbar === 'boolean' ? option.noScrollbar : typeof option.noScrollbar === 'undefined' ? null : null,
+      customizeScrollbar: typeof option.customizeScrollbar === 'boolean' ? option.customizeScrollbar : typeof option.customizeScrollbar === 'undefined' ? null : null,
+    };
   }
 
   init() {
+    this.wrap.classList.add('fixedTable--before', 'fixedTable');
     this.originTableWrap = this.wrap.children[0];
     this.originTable = this.originTableWrap.children[0];
     this.wrapW = this.wrap.offsetWidth;
@@ -28,59 +40,103 @@ class FixedTable {
     this.originTableW = this.originTable.offsetWidth;
     this.originTableH = this.originTable.offsetHeight;
     this.direction = this.wrap.getAttribute('data-direction');
-    this.getScrollbarWidth();
     this.setFixedStyle();
-    // console.log(this.originTableWrap, this.originTableW);
-    // console.log(this.originTableWrap, this.originTableH);
+    console.log(this.option);
   }
 
   // ----------------------------
   // テーブルの種類わけ
   // ----------------------------
   setFixedStyle() {
-    // 縦横スクロールのクラスがついていたら
-    if (this.direction === 'vh') {
-      console.log('縦横');
-      this.type = 'vh';
-      this.maxHeight = this.wrap.getAttribute('data-height');
+    let promise = Promise.resolve();
+    let doFirstFunc = setHtmlCss.bind(this);
+    let doSecondFunc = toggleClass.bind(this);
+    let doThirdFunc;
+    if (this.noOption) {
+      doThirdFunc = function () {
+        return false;
+      };
+    } else if (typeof this.option.afterInit === 'function') {
+      doThirdFunc = this.option.afterInit.bind(this);
+    }
 
-      //本当に縦横スクロールすべきか判断する
-      if (this.judgeOverflow() === 'vh') {
-        this.wrap.classList.add('fixedTable--vh');
-        this.colneFourTable();
-        this.setFirxedColRowStyle();
-        this.setFirxedColRowEvent();
-        this.setResizeEventListner();
-      } else if (this.judgeOverflow() === 'h') {
+    promise
+      .then(function () {
+        return new Promise(function (resolve) {
+          doFirstFunc();
+          resolve();
+        });
+      })
+      .then(function () {
+        return new Promise(function (resolve) {
+          doSecondFunc();
+          resolve();
+        });
+      })
+      .then(function () {
+        // optionのafterInitの指定がある場合最後に実行
+        doThirdFunc();
+      });
+
+    function setHtmlCss() {
+      // 縦横スクロールのクラスがついていたら
+      if (this.direction === 'vh') {
+        console.log('縦横');
+        this.type = 'vh';
+        this.maxHeight = this.wrap.getAttribute('data-height');
+
+        //本当に縦横スクロールすべきか判断する
+        if (this.judgeOverflow() === 'vh') {
+          this.wrap.classList.add('fixedTable--vh');
+          this.colneFourTable();
+          this.setFirxedColRowStyle();
+          this.setFirxedColRowEvent();
+          this.setResizeEventListner();
+        } else if (this.judgeOverflow() === 'h') {
+          this.type = 'h';
+          this.wrap.classList.add('fixedTable--h');
+          this.colneTable();
+          this.setFirxedColStyle();
+          this.setResizeEventListner();
+          this.setScrollEventListner();
+        } else if (this.judgeOverflow() === 'v') {
+          this.type = 'v';
+          this.wrap.classList.add('fixedTable--v');
+          this.colneTable();
+          this.setFirxedRowStyle();
+          this.setResizeEventListner();
+          this.setScrollEventListner();
+        }
+        // 横スクロールだったら
+      } else if (this.direction === 'horizontal') {
+        console.log('横');
         this.type = 'h';
         this.wrap.classList.add('fixedTable--h');
         this.colneTable();
         this.setFirxedColStyle();
         this.setResizeEventListner();
-      } else if (this.judgeOverflow() === 'v') {
+        this.setScrollEventListner();
+        // 縦スクロールだったら
+      } else if (this.direction === 'vertical') {
+        console.log('縦');
         this.type = 'v';
         this.wrap.classList.add('fixedTable--v');
+        this.maxHeight = this.wrap.getAttribute('data-height');
         this.colneTable();
         this.setFirxedRowStyle();
         this.setResizeEventListner();
+        this.setScrollEventListner();
+
+        // 縦も横もスクロールしない
+      } else {
+        this.wrap.classList.add('fixedTable--noScr');
       }
-      // 横スクロールだったら
-    } else if (this.direction === 'horizontal') {
-      console.log('横');
-      this.type = 'h';
-      this.wrap.classList.add('fixedTable--h');
-      this.colneTable();
-      this.setFirxedColStyle();
-      this.setResizeEventListner();
-      // 縦スクロールだったら
-    } else if (this.direction === 'vertical') {
-      console.log('縦');
-      this.type = 'v';
-      this.wrap.classList.add('fixedTable--v');
-      this.maxHeight = this.wrap.getAttribute('data-height');
-      this.colneTable();
-      this.setFirxedRowStyle();
-      this.setResizeEventListner();
+    }
+
+    function toggleClass() {
+      console.log('class toggle');
+      this.wrap.classList.remove('fixedTable--before');
+      this.wrap.classList.add('fixedTable--active');
     }
   }
 
@@ -182,6 +238,7 @@ class FixedTable {
   setFirxedColRowStyle() {
     this.getFIxedColInfo();
     this.getBorderWidth();
+    this.getScrollbarWidth();
 
     let scrollContHeight = this.wrap.getAttribute('data-height');
     let fixedH = this.fixedColHeight + this.borderWidth;
@@ -242,8 +299,6 @@ class FixedTable {
           this.fixedColHeight += targetRow.children[0].offsetHeight;
         }
     }
-    // console.log('横固定幅：' + this.fixedColWidth);
-    // console.log('縦固定幅：' + this.fixedColHeight);
   }
 
   // ----------------------------
@@ -259,7 +314,7 @@ class FixedTable {
   // ----------------------------
   getScrollbarWidth() {
     this.scrollbarW = this.wrap.offsetWidth - this.wrap.firstElementChild.clientWidth;
-    // console.log('スクロールバーの幅:' + this.scrollbarW);
+    console.log('スクロールバーの幅:' + this.scrollbarW);
   }
   // ----------------------------
   // 表がスクロールするかしないか判定
@@ -310,7 +365,15 @@ class FixedTable {
     this.resizeEndHandler = this.setResizeEndTimer.bind(this);
     window.addEventListener('resize', this.resizeEndHandler);
   }
-
+  // ----------------------------
+  // スクロールイベント付与
+  // ----------------------------
+  setScrollEventListner() {
+    this.scrollHandler = this.scrollStart.bind(this);
+    this.scrollEndHandler = this.setScrollEndTimer.bind(this);
+    this.originTableWrap.addEventListener('scroll', this.scrollHandler);
+    this.originTableWrap.addEventListener('scroll', this.scrollEndHandler);
+  }
   // ----------------------------
   // 縦横スクロールのスクロールイベント連動
   // 右上横スクロール時 = 右下と横スクロールが同期
@@ -319,8 +382,6 @@ class FixedTable {
   // ----------------------------
   doScrollLink(event) {
     this.scrollTargetEl = event.target;
-    // event.preventDefault();
-    // event.stopPropagation();
     this.scrollStart(this.scrollTargetEl);
 
     // 右下スクロールだったら
@@ -345,8 +406,11 @@ class FixedTable {
   // ----------------------------
   scrollStart(target) {
     if (!this.scrollFlag) {
-      this.removeScrollEvent(target);
       this.scrollFlag = true;
+      console.log('スクロール開始検');
+      if (this.type === 'vh') {
+        this.removeScrollEvent(target);
+      }
     }
   }
 
@@ -354,13 +418,17 @@ class FixedTable {
   // 縦横スクロールのスクロールイベントを破棄
   // ----------------------------
   removeScrollEvent(targetEl) {
-    if (targetEl.classList.contains('fixedTable-br-wrap')) {
-      this.topRightTableWrap.removeEventListener('scroll', this.scrollHandler);
-      this.bottomLeftTableWrap.removeEventListener('scroll', this.scrollHandler);
-    } else if (targetEl.classList.contains('fixedTable-tr-wrap')) {
-      this.bottomRightTableWrap.removeEventListener('scroll', this.scrollHandler);
-    } else if (targetEl.classList.contains('fixedTable-bl-wrap')) {
-      this.bottomRightTableWrap.removeEventListener('scroll', this.scrollHandler);
+    if (this.type === 'vh') {
+      if (targetEl.classList.contains('fixedTable-br-wrap')) {
+        this.topRightTableWrap.removeEventListener('scroll', this.scrollHandler);
+        this.bottomLeftTableWrap.removeEventListener('scroll', this.scrollHandler);
+      } else if (targetEl.classList.contains('fixedTable-tr-wrap')) {
+        this.bottomRightTableWrap.removeEventListener('scroll', this.scrollHandler);
+      } else if (targetEl.classList.contains('fixedTable-bl-wrap')) {
+        this.bottomRightTableWrap.removeEventListener('scroll', this.scrollHandler);
+      }
+    } else {
+      this.originTableWrap.removeEventListener('scroll', this.scrollHandler);
     }
   }
   // ----------------------------
@@ -385,14 +453,17 @@ class FixedTable {
   // ----------------------------
   reSetScrollEvent(targetEl) {
     console.log('スクロールイベント再付与');
-
-    if (targetEl.classList.contains('fixedTable-br-wrap')) {
-      this.topRightTableWrap.addEventListener('scroll', this.scrollHandler);
-      this.bottomLeftTableWrap.addEventListener('scroll', this.scrollHandler);
-    } else if (targetEl.classList.contains('fixedTable-tr-wrap')) {
-      this.bottomRightTableWrap.addEventListener('scroll', this.scrollHandler);
-    } else if (targetEl.classList.contains('fixedTable-bl-wrap')) {
-      this.bottomRightTableWrap.addEventListener('scroll', this.scrollHandler);
+    if (this.type === 'vh') {
+      if (targetEl.classList.contains('fixedTable-br-wrap')) {
+        this.topRightTableWrap.addEventListener('scroll', this.scrollHandler);
+        this.bottomLeftTableWrap.addEventListener('scroll', this.scrollHandler);
+      } else if (targetEl.classList.contains('fixedTable-tr-wrap')) {
+        this.bottomRightTableWrap.addEventListener('scroll', this.scrollHandler);
+      } else if (targetEl.classList.contains('fixedTable-bl-wrap')) {
+        this.bottomRightTableWrap.addEventListener('scroll', this.scrollHandler);
+      }
+    } else {
+      this.originTableWrap.addEventListener('scroll', this.scrollHandler);
     }
   }
   // ----------------------------
@@ -416,7 +487,6 @@ class FixedTable {
   resetTableStyle() {
     console.log('リサイズ終了');
     this.winW = window.innerWidth;
-    // this.getScrollbarWidth();
 
     // 大枠の横幅が変化した場合、
     // 横スクロールの有無・縦スクロールの有無の両方が変化しうる
@@ -441,7 +511,6 @@ class FixedTable {
 
             // reseze前後で横スクロールだけじゃなくなる
           } else {
-            console.log('reseze前後で横スクロールだけじゃなくなる');
             this.destroyStyle();
             this.init();
           }
@@ -449,7 +518,6 @@ class FixedTable {
           if (this.judgeOverflow() === prevType) {
             this.setFirxedRowStyle();
           } else {
-            console.log('reseze前後で縦スクロールだけじゃなくなる');
             this.destroyStyle();
             this.init();
           }
@@ -461,7 +529,6 @@ class FixedTable {
 
         // 縦スクロールだったら
       } else if (this.direction === 'vertical') {
-        console.log('縦');
         this.setFirxedRowStyle();
       }
     }
@@ -508,11 +575,15 @@ class FixedTable {
       this.type = null;
     }
   }
-
+  // ----------------------------
+  // reseizeイベントの破棄
+  // ----------------------------
   removeEventListener() {
     window.removeEventListener('resize', this.resizeEndHandler);
   }
-
+  // ----------------------------
+  // 完全な破棄
+  // ----------------------------
   destroy() {
     this.destroyStyle();
     this.removeEventListener();

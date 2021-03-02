@@ -14,9 +14,28 @@
 
     window.addEventListener("load", function () {
       let tableLists = Array.from(document.getElementsByClassName("js-fixedTable"));
-      let tableInstance = tableLists.map(function (table) {
-        let item = new FixedTable(table);
+      let item;
+
+      let tableInstance = tableLists.map(function (table,index) {
+        if(index === 1) {
+          item = new FixedTable(table, {
+          afterInit: function () {
+            console.log('afterInit')
+          },
+          startScroll: function () {
+            console.log('startScroll')
+          },
+          finishScroll: function () {
+            console.log('finishScroll')
+          },
+          noScrollbar: false,
+          customizeScrollbar: false,
+        });
         item.init();
+        } else {
+          item = new FixedTable(table);
+          item.init();
+        }
         return item;
       });
 
@@ -57,6 +76,18 @@
       </dl>
     </li>
     <li>Windows 10</li>
+    <dl>
+      <dt>Google Chrome</dt>
+      <dd>バージョン: </dd>
+    </dl>
+    <dl>
+      <dt>Fire Fox</dt>
+      <dd>バージョン: </dd>
+    </dl>
+    <dl>
+      <dt>chromium Edge</dt>
+      <dd>バージョン: </dd>
+    </dl>
   </ul>
 
   <h2>固定無し</h2>

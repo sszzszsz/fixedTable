@@ -1,9 +1,7 @@
-.js-fixedTable {
+.fixedTable {
   position: relative;
   overflow: scroll;
-}
 
-.fixedTable {
   &-origin {
     &-wrap {
       position: relative;
@@ -25,46 +23,54 @@
   &--h {
     overflow: hidden;
   }
-}
 
-.fixedTable--vh {
-  overflow: hidden;
-
-  .fixedTable-tl-wrap,
-  .fixedTable-tr-wrap,
-  .fixedTable-bl-wrap,
-  .fixedTable-br-wrap {
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    left: 0;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-
-    // -ms-overflow-style: none; /* これを追加 */
-    // scrollbar-width: none;
-    // &::-webkit-scrollbar {
-    //   display: none;
-    // }
-  }
-  .fixedTable-tl-wrap {
-    overflow: hidden;
-  }
-  .fixedTable-tr-wrap {
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-  .fixedTable-bl-wrap {
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-  .fixedTable-br-wrap {
-    z-index: 3;
+  &--noScr {
     overflow: auto;
   }
 
-  .fixedTable-origin-wrap {
-    overflow: scroll;
-    opacity: 0;
+  &--vh {
+    overflow: hidden;
+
+    .fixedTable-tl-wrap,
+    .fixedTable-tr-wrap,
+    .fixedTable-bl-wrap,
+    .fixedTable-br-wrap {
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      left: 0;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+    .fixedTable-tl-wrap {
+      overflow: hidden;
+    }
+    .fixedTable-tr-wrap {
+      overflow-x: auto;
+      overflow-y: hidden;
+      -ms-overflow-style: none; /* これを追加 */
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+    .fixedTable-bl-wrap {
+      overflow-x: hidden;
+      overflow-y: auto;
+      -ms-overflow-style: none; /* これを追加 */
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+    .fixedTable-br-wrap {
+      z-index: 3;
+      overflow: auto;
+    }
+
+    .fixedTable-origin-wrap {
+      overflow: scroll;
+      opacity: 0;
+    }
   }
 }
