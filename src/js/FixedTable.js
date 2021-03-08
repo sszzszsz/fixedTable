@@ -16,6 +16,9 @@ class FixedTable {
     this.cloneTableWrap = null;
     this.cloneTable = null;
     this.type = null;
+    this.scrollFlag = false;
+    this.isScrollTimerId = null;
+    this.isResizeTimerId = null;
 
     // option
     this.noOption = typeof option === 'undefined' ? true : false;
@@ -26,6 +29,8 @@ class FixedTable {
       finishScroll: typeof option.finishScroll === 'function' ? option.finishScroll : typeof option.finishScroll === 'undefined' ? null : null,
       noScrollbar: typeof option.noScrollbar === 'boolean' ? option.noScrollbar : typeof option.noScrollbar === 'undefined' ? null : null,
       customizeScrollbar: typeof option.customizeScrollbar === 'boolean' ? option.customizeScrollbar : typeof option.customizeScrollbar === 'undefined' ? null : null,
+      resizeTimer: typeof option.resizeTimer === 'number' ? option.resizeTimer : typeof option.resizeTimer === 'undefined' ? 200 : 200,
+      scrollTimer: typeof option.scrollTimer === 'number' ? option.scrollTimer : typeof option.scrollTimer === 'undefined' ? 200 : 200,
     };
   }
 
@@ -106,7 +111,6 @@ class FixedTable {
     };
 
     let toggleClass = () => {
-      console.log('class toggle');
       this.wrap.classList.remove('fixedTable--before');
       this.wrap.classList.add('fixedTable--active');
     };
@@ -115,24 +119,26 @@ class FixedTable {
       if (this.noOption) {
         return false;
       } else if (typeof this.option.afterInit === 'function') {
-        return this.option.afterInit.bind(this);
+        return this.option.afterInit.call(this);
       }
     };
 
     promise
-      .then(function () {
-        return new Promise(function (resolve) {
+      .then(() => {
+        return new Promise((resolve) => {
           setHtmlCss();
           resolve();
+          console.log('setHtmlCss');
         });
       })
-      .then(function () {
-        return new Promise(function (resolve) {
+      .then(() => {
+        return new Promise((resolve) => {
           toggleClass();
           resolve();
+          console.log('toggleClass');
         });
       })
-      .then(function () {
+      .then(() => {
         // optionのafterInitの指定がある場合最後に実行
         initCallbackFunc();
       });
@@ -344,7 +350,6 @@ class FixedTable {
   // thisの中身はclassの内容を参照できるように固定にしておく
   // ----------------------------
   setFirxedColRowEvent() {
-    this.scrollFlag = false;
     this.scrollHandler = this.doScrollLink.bind(this);
     this.scrollEndHandler = this.setScrollEndTimer.bind(this);
 
@@ -434,15 +439,15 @@ class FixedTable {
   // ・スクロール終了時にタイマーと初回スクロールの管理フラグを初期化
   // ----------------------------
   setScrollEndTimer() {
-    let _this = this;
-    this.isScrollTimerId;
-    window.clearTimeout(this.isScrollTimerId);
+    if (this.isScrollTimerId) {
+      window.clearTimeout(this.isScrollTimerId);
+    }
 
-    this.isScrollTimerId = setTimeout(function () {
-      _this.reSetScrollEvent(_this.scrollTargetEl);
-      _this.isScrollTimerId = null;
-      _this.scrollFlag = false;
-    }, 200);
+    this.isScrollTimerId = setTimeout(() => {
+      this.reSetScrollEvent(this.scrollTargetEl);
+      this.isScrollTimerId = null;
+      this.scrollFlag = false;
+    }, this.option.scrollTimer);
   }
 
   // ----------------------------
@@ -469,15 +474,15 @@ class FixedTable {
   // ・リサイズ終了時にタイマーと初回スクロールの管理フラグを初期化
   // ----------------------------
   setResizeEndTimer() {
-    let _this = this;
-    let isResizeTimerId;
-    window.clearTimeout(isResizeTimerId);
+    if (this.isResizeTimerId) {
+      window.clearTimeout(this.isResizeTimerId);
+    }
 
-    isResizeTimerId = setTimeout(function () {
-      _this.resetTableStyle(_this.scrollTargetEl);
-      isResizeTimerId = null;
-      _this.resizeFlag = false;
-    }, 200);
+    this.isResizeTimerId = setTimeout(() => {
+      this.resetTableStyle(this.scrollTargetEl);
+      this.isResizeTimerId = null;
+      this.resizeFlag = false;
+    }, this.option.resizeTimer);
   }
   // ----------------------------
   // リサイズ処理
@@ -539,24 +544,7 @@ class FixedTable {
   destroyStyle() {
     console.log('destroy');
     let cloneEl;
-    if (this.type === 'vh') {
-      remeveStyle.call(this);
-      cloneEl = this.wrap.children[0].outerHTML;
-      this.wrap.innerHTML = cloneEl;
-      this.wrap.classList.remove('fixedTable--vh');
-    } else if (this.type === 'v') {
-      remeveStyle.call(this);
-      cloneEl = this.wrap.querySelectorAll('.fixedTable-clone-wrap')[0];
-      cloneEl.parentNode.removeChild(cloneEl);
-      this.wrap.classList.remove('fixedTable--v');
-    } else if (this.type === 'h') {
-      remeveStyle.call(this);
-      cloneEl = this.wrap.querySelectorAll('.fixedTable-clone-wrap')[0];
-      cloneEl.parentNode.removeChild(cloneEl);
-      this.wrap.classList.remove('fixedTable--h');
-    }
-
-    function remeveStyle() {
+    let remeveStyle = () => {
       this.wrap.removeAttribute('style');
       this.originTableWrap.removeAttribute('style');
       this.originTable.removeAttribute('style');
@@ -571,6 +559,23 @@ class FixedTable {
       this.cloneTableWrap = null;
       this.cloneTable = null;
       this.type = null;
+    };
+
+    if (this.type === 'vh') {
+      remeveStyle();
+      cloneEl = this.wrap.children[0].outerHTML;
+      this.wrap.innerHTML = cloneEl;
+      this.wrap.classList.remove('fixedTable--vh');
+    } else if (this.type === 'v') {
+      remeveStyle();
+      cloneEl = this.wrap.querySelectorAll('.fixedTable-clone-wrap')[0];
+      cloneEl.parentNode.removeChild(cloneEl);
+      this.wrap.classList.remove('fixedTable--v');
+    } else if (this.type === 'h') {
+      remeveStyle();
+      cloneEl = this.wrap.querySelectorAll('.fixedTable-clone-wrap')[0];
+      cloneEl.parentNode.removeChild(cloneEl);
+      this.wrap.classList.remove('fixedTable--h');
     }
   }
   // ----------------------------
