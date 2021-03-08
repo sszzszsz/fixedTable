@@ -317,8 +317,13 @@ class FixedTable {
   // スクロールバーの幅取得
   // ----------------------------
   getScrollbarWidth() {
-    this.scrollbarW = this.wrap.offsetWidth - this.wrap.firstElementChild.clientWidth;
-    console.log('スクロールバーの幅:' + this.scrollbarW);
+    if (!this.option.noScrollbar) {
+      this.scrollbarW = this.wrap.offsetWidth - this.wrap.firstElementChild.clientWidth;
+      console.log('スクロールバーの幅:' + this.scrollbarW);
+    } else {
+      this.scrollbarW = 0;
+      this.wrap.classList.add('fixedTable--noBar');
+    }
   }
   // ----------------------------
   // 表がスクロールするかしないか判定

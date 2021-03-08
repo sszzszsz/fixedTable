@@ -72,5 +72,15 @@
       overflow: scroll;
       opacity: 0;
     }
+
+    &.fixedTable--noBar {
+      .fixedTable-br-wrap {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
+    }
   }
 }
