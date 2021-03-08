@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fixed Table</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-css-reset/dist/reset.min.css" />
+  <link rel="stylesheet" href="./css/demo.css">
+  <link rel="stylesheet" href="./css/style.css" />
+  <script src="./js/FixedTable.js"></script>
+  <script>
+
+    window.addEventListener("load", function () {
+      let tableLists = Array.from(document.getElementsByClassName("js-fixedTable"));
+      let item;
+
+      let tableInstance = tableLists.map(function (table, index) {
+        item = new FixedTable(table, {
+          afterInit: function () {
+            console.log('afterInit')
+          },
+          startScroll: function () {
+            console.log('startScroll')
+          },
+          finishScroll: function () {
+            console.log('finishScroll')
+          },
+          noScrollbar: false,
+          customizeScrollbar: false,
+          resizeTimer: 1000,
+          scrollTimer: 500,
+        });
+        item.init();
+        return item;
+      });
+
+      let destroyBtn = document.getElementById("destroy")
+      destroyBtn.addEventListener('click', function () {
+        tableInstance.forEach(instance => {
+          instance.destroy()
+        });
+      })
+    });
+
+  </script>
+</head>
+
+<body>
+  <h1>行列固定のテーブル</h1>
+  <p>EXCELのように行、列を固定にできるプラグインです</p>
+
+  <h2>動作確認環境</h2>
+  <ul>
+    <li>
+      <p>MacBook Pro (13-inch, M1, 2020) バージョン11.0</p>
+      <dl>
+        <dt>Google Chrome</dt>
+        <dd>バージョン: 88.0.4324.182（Official Build）(arm64)</dd>
+      </dl>
+      <dl>
+        <dt>Fire Fox</dt>
+        <dd>バージョン: 85.0.2</dd>
+      </dl>
+      <dl>
+        <dt>Safari</dt>
+        <dd>バージョン: 14.0.1 (16610.2.11.1.3)</dd>
+      </dl>
+      <dl>
+        <dt>chromium Edge</dt>
+        <dd>バージョン: 88.0.705.74 (公式ビルド) (64 ビット)</dd>
+      </dl>
+    </li>
+    <li>Windows 10</li>
+    <dl>
+      <dt>Google Chrome</dt>
+      <dd>バージョン: </dd>
+    </dl>
+    <dl>
+      <dt>Fire Fox</dt>
+      <dd>バージョン: </dd>
+    </dl>
+    <dl>
+      <dt>chromium Edge</dt>
+      <dd>バージョン: </dd>
+    </dl>
+  </ul>
+
+  <h2>縦横スクロール</h2>
+  <div class="cont js-fixedTable" data-height="400" data-direction="vh">
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th colspan="2" rowspan="2" class="js-fixedHead">見出し</th>
+            <th>見出し</th>
+            <th>見出し</th>
+            <th>見出し</th>
+            <th>見出し<br />見出し</th>
+            <th>見出し</th>
+          </tr>
+          <tr>
+            <th>見出し</th>
+            <th>見出し</th>
+            <th>見出し</th>
+            <th>見出し<br />見出し</th>
+            <th>見出し</th>
+          </tr>
+          <tr>
+            <th colspan="2" class="js-fixedHead">見出し</th>
+            <th>見出し</th>
+            <th>見出し</th>
+            <th>見出し</th>
+            <th>見出し<br />見出し</th>
+            <th>見出し</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th colspan="2">見出し</th>
+            <td>データ</td>
+            <td>データ</td>
+            <td>データ</td>
+            <td>データ</td>
+            <td>データ</td>
+          </tr>
+          <tr>
+            <th>見出し</th>
+            <th>見出し</th>
+            <td>データ</td>
+            <td>データ</td>
+            <td>あああああああああああああああああああああああああああああああ</td>
+            <td>データ</td>
+            <td>データ</td>
+          </tr>
+          <tr>
+            <th rowspan="2">見出し<br />見出し</th>
+            <th>見出し<br />見出し</th>
+            <td>データ</td>
+            <td>データ</td>
+            <td>データ</td>
+            <td>データ</td>
+            <td>データ</td>
+          </tr>
+          <tr>
+            <th>見出し<br />見出し</th>
+            <td>データ</td>
+            <td>データ</td>
+            <td>データ</td>
+            <td>データ</td>
+            <td>データ</td>
+          </tr>
+          <tr>
+            <th>見出し</th>
+            <th>見出し</th>
+            <td>データ</td>
+            <td>データ</td>
+            <td>あああああああああああああああああああああああああああああああ</td>
+            <td>データ</td>
+            <td>データ</td>
+          </tr>
+          <tr>
+            <th>見出し</th>
+            <th>見出し</th>
+            <td>データ</td>
+            <td>データ</td>
+            <td>あああああああああああああああああああああああああああああああ</td>
+            <td>データ</td>
+            <td>データ</td>
+          </tr>
+          <tr>
+            <th>見出し</th>
+            <th>見出し</th>
+            <td>データ</td>
+            <td>データ</td>
+            <td>あああああああああああああああああああああああああああああああ</td>
+            <td>データ</td>
+            <td>データ</td>
+          </tr>
+          <tr>
+            <th>見出し</th>
+            <th>見出し</th>
+            <td>データ</td>
+            <td>データ</td>
+            <td>あああああああああああああああああああああああああああああああ</td>
+            <td>データ</td>
+            <td>データ</td>
+          </tr>
+          <tr>
+            <th>見出し</th>
+            <th>見出し</th>
+            <td>データ</td>
+            <td>データ</td>
+            <td>あああああああああああああああああああああああああああああああ</td>
+            <td>データ</td>
+            <td>データ</td>
+          </tr>
+          <tr>
+            <th>見出し</th>
+            <th>見出し</th>
+            <td>データ</td>
+            <td>データ</td>
+            <td>あああああああああああああああああああああああああああああああ</td>
+            <td>データ</td>
+            <td>データ</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <button id="destroy">破棄</button>
+  <footer id="footer">
+    Vanilla Fixed Table
+  </footer>
+</body>
+
+</html>
