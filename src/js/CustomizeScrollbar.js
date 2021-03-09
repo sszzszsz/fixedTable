@@ -52,14 +52,24 @@ class CustomizeScrollbar {
   getStyleInfo() {
     this.scrAreaH = this.scrArea.scrollHeight;
     this.scrAreaW = this.scrArea.scrollWidth;
+    // 実際にスクロールする量 = スクロールするコンテンツ - 可視領域
+    this.scrYrange = this.scrAreaH - this.scrArea.clientHeight;
+    this.scrXrange = this.scrAreaW - this.scrArea.clientWidth;
+    // スクロールするコンテンツと見えている部分の比率
+    this.rateY = this.scrArea.clientHeight / this.scrAreaH;
+    this.rateX = this.scrArea.clientWidth / this.scrAreaW;
 
     if (this.scrY) {
+      this.yBar.style.height = `${this.scrArea.clientHeight - this.scrYrange * this.rateY}px`;
+
       this.yBarWrapW = this.yBarWrap.clientWidth;
       this.yBarH = this.yBar.clientHeight;
       this.scrBarAreaH = this.yBarWrap.clientHeight;
       this.wrap.style.paddingRight = `${this.yBarWrapW}px`;
     }
     if (this.scrX) {
+      this.xBar.style.width = `${this.scrArea.clientWidth - this.scrXrange * this.rateX}px`;
+
       this.xBarWrapH = this.xBarWrap.clientHeight;
       this.xBarW = this.xBar.clientWidth;
       this.scrBarAreaW = this.xBarWrap.clientWidth;
@@ -88,22 +98,22 @@ class CustomizeScrollbar {
   }
 
   linkBar(e, x, y) {
+    let barRelativeValue;
+
     if (this.scrY) {
       //実際にバーが移動する距離
       let barMoveAreaY = this.scrBarAreaH - this.yBarH; // 200 - 20 = 180
-      //実際にスクロールする量
-      let scrollAreaY = this.scrAreaH - this.scrBarAreaH; // 800 - 200 = 600
 
       if (e.type === 'scroll') {
         // スクロールできる範囲に対して実際スクロールした割合
-        let scrRelativeValue = e.target.scrollTop / scrollAreaY; // 400スクロールしたとき /600 = 0.666（60%分スクロールした）
+        let scrRelativeValue = e.target.scrollTop / this.scrYrange; // 400スクロール/600 = 0.666（60%分スクロールした）
         let yPos = barMoveAreaY * scrRelativeValue; // 180 * 0.6666
         this.yBar.style.transform = `translateY(${yPos}px)`;
       } else if (e.type === 'pointermove') {
         // スクロールバーと連動させてコンテンツ部分をスクロールさせるとスクロールイベントが発生してしまうので一旦オフする
         this.scrArea.removeEventListener('scroll', this.scrAreaEvent);
-        let barRelativeValue = y / barMoveAreaY; // 100スクロールしたとき /180
-        let yPos = scrollAreaY * barRelativeValue;
+        barRelativeValue = y / barMoveAreaY; // 100スクロールしたとき /180
+        let yPos = this.scrYrange * barRelativeValue;
         this.scrArea.scrollTop = yPos;
       }
     }
@@ -121,7 +131,7 @@ class CustomizeScrollbar {
       } else if (e.type === 'pointermove') {
         // スクロールバーと連動させてコンテンツ部分をスクロールさせるとスクロールイベントが発生してしまうので一旦オフする
         this.scrArea.removeEventListener('scroll', this.scrAreaEvent);
-        let barRelativeValue = x / barMoveAreaW; // 100スクロールしたとき /180
+        barRelativeValue = x / barMoveAreaW; // 100スクロールしたとき /180
         let xPos = scrollAreaW * barRelativeValue;
         this.scrArea.scrollLeft = xPos;
       }
@@ -165,26 +175,32 @@ class CustomizeScrollbar {
     let y = e.clientY - target_rect.top;
     console.log('(x, y) = (' + x + ',' + y + ')');
 
+    let translateY = 0;
+    let translateX = 0;
     if (this.scrY) {
       // スクロール値がバーの半分の高さより小さくなった場合、バーを上付きにする
       if (y < this.yBarH / 2) {
         this.yBar.style.transform = `translateY(0px)`;
       } else if (y > this.scrBarAreaH - this.yBarH / 2) {
-        this.yBar.style.transform = `translateY(${this.scrBarAreaH - this.yBarH}px)`;
+        translateY = this.scrBarAreaH - this.yBarH;
+        this.yBar.style.transform = `translateY(${translateY}px)`;
       } else {
-        this.yBar.style.transform = `translateY(${y - this.yBarH / 2}px)`;
+        translateY = y - this.yBarH / 2;
+        this.yBar.style.transform = `translateY(${translateY}px)`;
       }
     }
 
     if (this.scrX) {
       if (x < this.xBarW / 2) {
-        this.xBar.style.transform = `translateY(0px)`;
-      } else if (y > this.scrBarAreaH - this.xBarW / 2) {
-        this.xBar.style.transform = `translateY(${this.scrBarAreaW - this.xBarW}px)`;
+        this.xBar.style.transform = `translateX(0px)`;
+      } else if (x > this.scrBarAreaW - this.xBarW / 2) {
+        translateX = this.scrBarAreaW - this.xBarW;
+        this.xBar.style.transform = `translateX(${translateX}px)`;
       } else {
-        this.xBar.style.transform = `translateY(${y - this.xBarW / 2}px)`;
+        translateX = x - this.xBarW / 2;
+        this.xBar.style.transform = `translateX(${translateX}px)`;
       }
     }
-    this.linkBar.call(this, e, x, y);
+    this.linkBar.call(this, e, translateX, translateY);
   }
 }
