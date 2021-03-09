@@ -4,6 +4,8 @@
 // row ... 行（よこï）
 // ----------------------------
 
+// import CustomizeScrollbar from 'CustomizeScrollbar.js';
+
 // eslint-disable-next-line no-unused-vars
 class FixedTable {
   constructor(el, option) {

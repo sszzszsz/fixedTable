@@ -84,3 +84,77 @@
     }
   }
 }
+
+.cs {
+  &-bar {
+    position: relative;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  &-area {
+    overflow: auto;
+    position: relative;
+    z-index: 1;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  &-barArea {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+
+  &-xBarArea {
+    background: #dcdcdc;//これは動的
+    width: 100%;
+    height: 16px;//これは動的
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+  }
+  &-yBarArea {
+    background: #dcdcdc;//これは動的
+    width: 16px;//これは動的
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+  }
+  &-yBar {
+    background: #7d7d7d;//これは動的
+    width: 10px;//これは動的
+    height: 30px;//これは動的
+    margin: 0 auto;
+    z-index: 3;
+    border-radius: 5px;
+    cursor: pointer;
+    transform-origin: top;
+    -webkit-user-drag:none;
+    -khtml-user-drag:none;
+  }
+    &-xBar {
+    background: #7d7d7d;//これは動的
+    width: 20px;//これは動的
+    height: 10px;//これは動的
+    margin: auto;
+    z-index: 3;
+    border-radius: 5px;
+    cursor: pointer;
+    -webkit-user-drag:none;
+    -khtml-user-drag:none;
+    top: 0;
+    bottom: 0;
+    position: absolute;
+  }
+}

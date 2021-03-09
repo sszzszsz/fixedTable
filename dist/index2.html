@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="./css/demo.css">
   <link rel="stylesheet" href="./css/style.css" />
   <script src="./js/FixedTable.js"></script>
+  <script src="./js/CustomizeScrollbar.js"></script>
   <script>
 
     window.addEventListener("load", function () {
@@ -36,15 +37,47 @@
         return item;
       });
 
-      let destroyBtn = document.getElementById("destroy")
-      destroyBtn.addEventListener('click', function () {
-        tableInstance.forEach(instance => {
-          instance.destroy()
-        });
-      })
+      let scY = document.getElementById("scY")
+      let scYbar = new CustomizeScrollbar(scY)
+      scYbar.init()
+
+      let scX = document.getElementById("scX")
+      let scXbar = new CustomizeScrollbar(scX)
+      scXbar.init()
     });
 
   </script>
+
+  <style>
+    #scY,
+    #scX {
+      max-width: 1000px;
+      width: 100%;
+      border: 1px solid;
+      margin: 50px auto;
+    }
+
+    #scY .cs-area {
+      height: 200px;
+      overflow: auto;
+    }
+
+    #scY .cs-cont {
+      height: 800px;
+      margin: 1em;
+      border: 1px solid;
+    }
+
+    #scX .cs-area {
+      overflow: auto;
+    }
+
+    #scX .cs-cont {
+      width: 2000px;
+      padding: 1em;
+      background: #eee;
+    }
+  </style>
 </head>
 
 <body>
@@ -88,7 +121,7 @@
   </ul>
 
   <h2>縦横スクロール</h2>
-  <div class="cont js-fixedTable" data-height="400" data-direction="vh">
+  <div class="cont js-fixedTable js-csScrollbar" data-height="400" data-direction="vh">
     <div>
       <table>
         <thead>
@@ -211,7 +244,21 @@
   </div>
 
 
-  <button id="destroy">破棄</button>
+  <div id="scY" class="cs-bar">
+    <div class="cs-area">
+      <div class="cs-cont">
+        ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ
+      </div>
+    </div>
+  </div>
+
+  <div id="scX" class="cs-bar">
+    <div class="cs-area">
+      <div class="cs-cont">
+        ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ
+      </div>
+    </div>
+  </div>
   <footer id="footer">
     Vanilla Fixed Table
   </footer>
