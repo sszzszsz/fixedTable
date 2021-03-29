@@ -24,16 +24,29 @@ class FixedTable {
 
     // option
     this.noOption = typeof option === 'undefined' ? true : false;
-    if (this.noOption) return false;
-    this.option = {
-      afterInit: typeof option.afterInit === 'function' ? option.afterInit : null,
-      startScroll: typeof option.startScroll === 'function' ? option.startScroll : typeof option.startScroll === 'undefined' ? null : null,
-      finishScroll: typeof option.finishScroll === 'function' ? option.finishScroll : typeof option.finishScroll === 'undefined' ? null : null,
-      noScrollbar: typeof option.noScrollbar === 'boolean' ? option.noScrollbar : typeof option.noScrollbar === 'undefined' ? null : null,
-      customizeScrollbar: typeof option.customizeScrollbar === 'boolean' ? option.customizeScrollbar : typeof option.customizeScrollbar === 'undefined' ? null : null,
-      resizeTimer: typeof option.resizeTimer === 'number' ? option.resizeTimer : typeof option.resizeTimer === 'undefined' ? 200 : 200,
-      scrollTimer: typeof option.scrollTimer === 'number' ? option.scrollTimer : typeof option.scrollTimer === 'undefined' ? 200 : 200,
-    };
+    if (this.noOption) {
+      // option指定が何もない場合
+      this.option = {
+        afterInit: null,
+        startScroll: null,
+        finishScroll: null,
+        noScrollbar: false,
+        customizeScrollbar: null,
+        resizeTimer: 200,
+        scrollTimer: 200,
+      };
+    } else {
+      // option指定があったりなかったりの場合
+      this.option = {
+        afterInit: typeof option.afterInit === 'function' ? option.afterInit : null,
+        startScroll: typeof option.startScroll === 'function' ? option.startScroll : typeof option.startScroll === 'undefined' ? null : null,
+        finishScroll: typeof option.finishScroll === 'function' ? option.finishScroll : typeof option.finishScroll === 'undefined' ? null : null,
+        noScrollbar: typeof option.noScrollbar === 'boolean' ? option.noScrollbar : typeof option.noScrollbar === 'undefined' ? false : false,
+        customizeScrollbar: typeof option.customizeScrollbar === 'boolean' ? option.customizeScrollbar : typeof option.customizeScrollbar === 'undefined' ? null : null,
+        resizeTimer: typeof option.resizeTimer === 'number' ? option.resizeTimer : typeof option.resizeTimer === 'undefined' ? 200 : 200,
+        scrollTimer: typeof option.scrollTimer === 'number' ? option.scrollTimer : typeof option.scrollTimer === 'undefined' ? 200 : 200,
+      };
+    }
   }
 
   init() {
@@ -319,7 +332,10 @@ class FixedTable {
   // スクロールバーの幅取得
   // ----------------------------
   getScrollbarWidth() {
-    if (!this.option.noScrollbar) {
+    if (this.noOption) {
+      this.scrollbarW = this.wrap.offsetWidth - this.wrap.firstElementChild.clientWidth;
+      console.log('スクロールバーの幅:' + this.scrollbarW);
+    } else if (!this.option.noScrollbar) {
       this.scrollbarW = this.wrap.offsetWidth - this.wrap.firstElementChild.clientWidth;
       console.log('スクロールバーの幅:' + this.scrollbarW);
     } else {
@@ -417,7 +433,7 @@ class FixedTable {
   scrollStart(target) {
     if (!this.scrollFlag) {
       this.scrollFlag = true;
-      console.log('スクロール開始検');
+      console.log('スクロール開始');
       if (this.type === 'vh') {
         this.removeScrollEvent(target);
       }
